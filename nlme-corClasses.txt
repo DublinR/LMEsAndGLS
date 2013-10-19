@@ -1,0 +1,37 @@
+Description
+
+Standard classes of correlation structures (corStruct) available in the nlme library.
+
+Value
+
+Available standard classes:
+
+corAR1	
+autoregressive process of order 1.
+
+corARMA	
+autoregressive moving average process, with arbitrary orders for the autoregressive and moving average components.
+
+corCAR1	
+continuous autoregressive process (AR(1) process for a continuous time covariate).
+
+corCompSymm	
+compound symmetry structure corresponding to a constant correlation.
+
+corExp	
+exponential spatial correlation.
+
+corGaus	
+Gaussian spatial correlation.
+
+corLin	
+linear spatial correlation.
+
+corRatio	
+Rational quadratics spatial correlation.
+
+corSpher	
+spherical spatial correlation.
+
+corSymm	
+general correlation matrix, with no additional structure.
