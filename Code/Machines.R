@@ -3,9 +3,7 @@ library(nlme)
 
 head(Machines)
 obs=c(rep(1:3,18))
-
-
-
+#-------------------------------------------------------#
 
 
 machdat = groupedData( score ~ machine | worker ,
@@ -18,6 +16,7 @@ machdat = groupedData( score ~ machine | worker ,
     labels = list(score = "Score", machine = "Machines"),
     order.groups = FALSE )
 
+#------------------------------------------------------#
 mach1 = lme(score ~ mach-1, data = machdat,random = list(worker=pdSymm(~ mach-1)), correlation = corSymm(form=~1 | worker/obs), method="ML")
 summary(mach1)
 VarCorr(mach1)
@@ -41,6 +40,7 @@ VarCorr(mach5)
 mach6 = lme(score ~ mach-1, data = machdat,random = list(worker=pdCompSymm(~ mach-1)), weights = varPower(form=~mach),correlation = corSymm(form=~1 | worker/obs), method="ML")
 summary(mach6)
 VarCorr(mach6)
+
 machA = lme(score ~ mach-1, data = machdat,random = ~ mach-1, method="ML")
 summary(machA)
 VarCorr(machA)
