@@ -1,4 +1,3 @@
-
 library(MASS)
 data(oats)
 names(oats) = c('block', 'variety', 'nitrogen', 'yield')
