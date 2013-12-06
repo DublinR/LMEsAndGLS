@@ -1,0 +1,4 @@
+Correlation structure
+
+We can easily incorporate correlation structures in lme.  Mostly used for temporal correlation structures are corAR1, corCAR1 (autoregressive and continuous autoregressive 
+correlation structures of order 1), and corCompSymm (compound symmetry).
