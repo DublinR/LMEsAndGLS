@@ -1,10 +1,17 @@
-Description
+
+To quote Pinheiro and Bates (2000), 
+"New corStruct classes, representing user-defined correlation structures, 
+can be added to the set of standard classes and used with the modeling 
+functions in the nlme library. For this, one must specify a constructor 
+function, generally with the same name as the class, and, at a minimum, 
+methods for the functions coef, corMatrix, and initialize."
+
+%-------------------------------------------------------------------------------%
+Description of Classes
 
 Standard classes of correlation structures (corStruct) available in the nlme library.
 
-Value
-
-Available standard classes:
+Value/Available standard classes:
 
 corAR1	
 autoregressive process of order 1.
