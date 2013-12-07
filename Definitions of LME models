@@ -1,0 +1,16 @@
+Definition of LME Models
+%-------------------------------------------------------%
+
+In matrix notation a mixed model can be represented as
+\[ y = X \beta + Zu + \epsilon\,\]
+where
+\begin{itemize}
+\item y is a vector of observations, with mean $E(y)=X\beta$
+\item $\beta$ is a vector of fixed effects
+\item u is a vector of random effects with mean $E(u)=0$ and variance-covariance matrix 
+$\operatorname{var}(u)=G$.
+\item \epsilon is a vector of IID random error terms with mean $E(\epsilon)=0$ and variance 
+$\operatorname{var}(\epsilon)=R$
+\item X and Z are matrices of regressors relating the observations y to $\beta$ and u, respectively.
+\end{itemize}
+%-------------------------------------------------------%
