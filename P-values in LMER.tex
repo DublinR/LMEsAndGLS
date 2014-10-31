@@ -6,6 +6,8 @@ What if the sample size is not large? A p-value based on  will be too liberal (i
 
 The function I wrote chews up the lmer() model call and concatenates the frame and model matrix slots, after which it iteratively fits (via maximum likelihood instead of restricted ML) models reduced by each fixed effect and compares them to the full model, yielding a vector of p-values based on . As the example shows, the function can handle shortcut formulas whereby lower order terms are implied by an interaction term. The function doesn't currently handle weights, glmer() objects, or on-the-fly transformations of the dependent variable [e.g., log(dep.var) ~ ...]. The accuracy of resulting p-values depends on large sample properties, as discussed above, so I don't recommend using the function with small samples. I'm working on another function that will calculate p-values based on the effective sample size estimated from intraclass correlation. I will post that function in a future entry. I'm sure the following function could be improved, but I wanted to go ahead share it with other applied researchers whose audience likes p-values. Please let me know if you see ways to make it better.
 
+\begin{framed}
+\begin{verbatim}
 
 p.values.lmer <- function(x) {
   summary.model <- summary(x)
@@ -40,7 +42,10 @@ p.values.lmer <- function(x) {
                            "\n(p-values from comparing nested models fit by maximum likelihood)")
   print(summary.model)
 }
+\end{vebatim}
+\end{framed}
 
+%==============================================================================================================%
 library(lme4)
 library(SASmixed)
 lmer.out <- lmer(strength ~ Program * Time + (Time|Subj), data=Weights)
