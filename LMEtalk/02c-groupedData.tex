@@ -1,0 +1,20 @@
+
+
+%=======================================================%
+\begin{frame}[fragile]
+\frametitle{ \texttt{groupedData} }
+\begin{framed}
+\begin{document{
+Orth.new <-  # create a new copy of the groupedData object
+  groupedData( distance ~ age | Subject,
+              data = as.data.frame( Orthodont ),
+              FUN = mean,
+              outer = ~ Sex,
+              labels = list( x = "Age",
+                y = "Distance from pituitary to pterygomaxillary fissure" ),
+              units = list( x = "(yr)", y = "(mm)") )
+\end{verbatim}
+\end{framed}
+\end{frame}
+%======================================================%
+\end{document}
