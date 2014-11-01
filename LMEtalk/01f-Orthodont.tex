@@ -26,6 +26,61 @@ an ordered factor indicating the subject on which the measurement was made. The 
 
 \texttt{Sex}
 a factor with levels Male and Female
+\end{frame}
+%=========================================================================================================%
+\begin{frame}[fragile]
 
+\begin{verbatim}
+> library(nlme)
+> fm1 <- lme(distance~age,random=~1|Subject,data=Orthodont)
+> coef(fm1)
+    (Intercept)       age
+M16    15.84314 0.6601852
+M05    15.84314 0.6601852
+M02    16.17959 0.6601852
+M11    16.40389 0.6601852
+M07    16.51604 0.6601852
+M08    16.62819 0.6601852
+M03    16.96464 0.6601852
+\end{verbatim}
+\end{frame}
+%=========================================================================================================%
+\begin{frame}
+use fixef() to get just the fixed effect coefficients
+use ranef() to get just the random effects (i.e. deviations of each individual from the fixed coefficients
+the Orthodont example in lme actually uses a random-slope(+intercept) model; here I have fitted a random-intercept model, so the estimated slope (age parameter) is the same for every individual
+it looks like individuals are sorted in increasing order of estimated random effect
 %============================================================================%
+
+I have two factors in the linear mixed model. Factor A is treated as fixed effect, factor B is treated as random effect and nested into factor A. Can anyone tell me how to do this using nlme R package?
+
+I know that lme( response~ factorA, random=~1|factorA/factorB) is one way to model. however, this function treat factor A as random effect.
+
+This depends on how your variables are coded. You might have distinct names for the variables in factorB, like this; then just having factorB as a random effect, is sufficient.
+
+factorA  factorB
+bob      bob1
+bob      bob2
+bob      bob3
+jane     jane1
+jane     jane2
+jane     jane3
+
+lme(response ~ factorA, random=~1|factorB)
+But you might have the same coding for the variables in factorB for each level of factorA, like this; then just having factorB as a random effect is not correct; you instead need the random effect to be the interaction between them, I think code using : would work, but it might be more readable to make a new variable.
+
+factorA  factorB
+bob      rep1
+bob      rep2
+bob      rep3
+jane     rep1
+jane     rep2
+jane     rep3
+
+%==============================================================================================%
+lme(response ~ factorA, random=~1|factorA:factorB)
+
+dat$factorAB <- with(dat, factor(paste(factorA, factorB), sep="."))
+lme(response ~ factorA, random=~1|factorAB)
+%==============================================================================================%
 \end{document}
