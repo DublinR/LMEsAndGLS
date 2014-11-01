@@ -1,0 +1,59 @@
+I am having some difficulties interpreting the results of an analysis perfomed using lme. I conducted an experiment where the subjects had to estimate the time elapsed in a task involving a spatial measure (e.g. subjects watched a video game where a car travels a certain distance). My goal is to determine if there is a linear relation between perceived time and the space traveled by the car. Subject underwent 2 different conditions (e.g. the car was traveling two distances), and each condition was repeated twice. Therefore, given the nature of the experimental design involving repeated measures, I cannot use a simple linear model but I have to use a mixed effects linear model with a random intercept for subject.
+
+I use the R language, and I adopted this formula to solve my problem
+
+library(nlme)
+summary(lme(Time ~ Distance, data = my_Table, random = ~1 | Subject))
+The output that I get is:
+
+Linear mixed-effects model fit by REML
+ Data: my_Table 
+      AIC      BIC    logLik
+  608.315 618.4454 -300.1575
+
+Random effects:
+ Formula: ~1 | Subject
+        (Intercept) Residual
+StdDev:    2.964139 4.919044
+
+Fixed effects: Time ~ Distance
+                                          Value Std.Error DF  t-value p-value
+(Intercept)                            5.518714 0.8212930 64 6.719543  0.0000
+ Distance                              0.013092 0.0053225 64 2.459718  0.0166
+ Correlation: 
+                                       (Intr)
+ Distance                              -0.415
+
+Standardized Within-Group Residuals:
+       Min         Q1        Med         Q3        Max 
+-1.2904862 -0.4302117 -0.2593047  0.2081889  5.0914269 
+
+Number of Observations: 95
+Number of Groups: 30 
+Now, what is this output telling me? As far as I understand from studying the literature that I found online (I am not a statistician...), if I am rght these results are telling me that there is a linear relation between time and space, since b = 0.013092 and p-value is significant.
+
+Now, if the p-value was not significant, this would have meant that there is no linear relation between time and space?
+
+r mixed-effect
+shareimprove this question
+edited Sep 22 '12 at 13:37
+
+Michael Chernick
+22.4k22256	
+asked Sep 22 '12 at 12:56
+
+Luca
+4181816
+add a comment
+1 Answer
+activeoldestvotes
+up vote
+4
+down vote
+accepted
+In answering, I will assume that the modeling assumptions you made are correct and you ran the program properly since your question only addresses interpretation of the output. In a linear model involving a single covariate, you can test for a linear association either by testing whether the slope coefficient is 0 or not or testing that the Pearson correlation between the response and the covariate is 0 or not.
+
+You tested the slope coefficient and got a small slope that is positive. The test for that coefficient being 0 had a p-value of 0.0166. If that p-value is below your desired significance level, you would conclude that there is some relationship between the covariate and response. Using a traditional significance level of 0.05, you would then reject the null hypothesis that there is no relationship. However, the slope appears to be small and the intercept is the dominant term in the model. Saying that the correlation is not zero is not the same as saying that the correlation is strong. You should look at say a 95% confidence interval for the correlation and think about what its upper bound is telling. If a strong correlation to you is say around 0.6 and the upper bound is say 0.1 this is suggest that the correlation though probably greater than 0 is not strong.
+
+Addressing your second question, if the p-value is not below your significance level, you don't conclude anything. What you know is that the data did not supply enough evidence that the correlation is different from 0. This could be because it is 0 or very close to 0. But more importantly it could be that the sample size is not large enough to reach the conclusion that it is different from 0. Now if you instead address the issue of strong correlation and 0.6 is your definition of strong then it may be the case that the upper bound of the 95% confidence interval for the Pearson correlation is below (perhaps far below) 0.6 and you can still claim at least that the correlation is not strong. Understand that testing for strong correlation is different than testing for non-zero correlation and the p-value in your output address the latter test in my previous sentence and not the former.
+
