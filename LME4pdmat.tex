@@ -1,0 +1,105 @@
+
+
+
+ I would like to switch from nlme to lme4 and try to translate some of my
+ models that worked fine with lme.
+ I have problems with the pdMat classes.
+
+ Below a toy dataset with a fixed effect F and a random effect R. I gave
+ also 2 similar lme models.
+
+ The one containing pdLogChol (lme1) is easy to translate (as it is an
+ explicit notation of the default model)
+
+
+ The more parsimonious model with pdDiag replacing pdLogChol I cannot
+ reproduce with lmer. The obvious choice for me would be my model lmer2,
+ but this is yielding different result.
+
+ %===============================================================================%
+
+
+ #dataset from McLean, Sanders and Stroup
+ F <- factor(c(1,1,1,1,1,1,2,2,2,2,2,2))
+ R <- factor(c(1,1,2,2,3,3,1,1,2,2,3,3))
+ s <-
+ c(51.43,51.28,50.93,50.75,50.47,50.83,51.91,52.43,52.26,52.33,51.58,51.23)
+ DS <- data.frame(F,R,s)
+ DS$F <- as.factor(DS$F)
+ DS$R <- as.factor(DS$R)
+
+ library(nlme)
+ lme1 <- lme(data = DS,s ~ F,random = list(R = pdLogChol(~F)))
+ lme2 <- lme(data = DS,s ~ F,random = list(R = pdDiag(~F)))
+ summary(lme1)
+ summary(lme2)
+
+ library(lme4)
+ lmer1 <- lmer(data = DS,s ~ F + (F|R))
+ lmer2 <- lmer(data = DS,s ~ F + (1|R) + (1|F))
+ summary(lmer1)
+ summary(lmer2)
+
+You need to generate the two columns of the indicator matrix for F as
+separate model matrices.  This will involve some awkward construction
+like
+
+ (fm1 <- lmer(s ~ F +(F|R), DS))
+Linear mixed-effects model fit by REML
+Formula: s ~ F + (F | R)
+   Data: DS
+      AIC      BIC    logLik MLdeviance REMLdeviance
+ 20.69259 23.60203 -4.346297    6.03915     8.692593
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ R        (Intercept) 0.108796 0.32984
+          F2          0.102008 0.31939  -0.014
+ Residual             0.048525 0.22028
+# of obs: 12, groups: R, 3
+
+Fixed effects:
+            Estimate Std. Error DF  t value  Pr(|t|)
+(Intercept)  50.9483     0.2106 10 241.9188 < 2.2e-16
+F2            1.0083     0.2240 10   4.5014  0.001141
+ (fm2 <- lmer(s ~ F + (0+as.numeric(F==1)|R) + (0+as.numeric(F==2)|R), DS))
+Linear mixed-effects model fit by REML
+Formula: s ~ F + (0 + as.numeric(F == 1) | R) + (0 + as.numeric(F ==
+2) |      R)
+   Data: DS
+      AIC      BIC    logLik MLdeviance REMLdeviance
+ 19.62621 22.05075 -4.813107   7.439584     9.626215
+Random effects:
+ Groups   Name               Variance Std.Dev.
+ R        as.numeric(F == 1) 0.108796 0.32984
+ R        as.numeric(F == 2) 0.207896 0.45596
+ Residual                    0.048525 0.22028
+# of obs: 12, groups: R, 3; R, 3
+
+Fixed effects:
+            Estimate Std. Error DF  t value Pr(|t|)
+(Intercept) 50.94833    0.21060 10 241.9188  < 2e-16
+F2           1.00833    0.34891 10   2.8899  0.01611
+
+There are probably more elegant ways of doing this but I don't think
+there is any really clean way.  If you want to assume that all the
+variances are equal then you can estimate the model using an
+interaction.
+
+ (fm3 <- lmer(s ~ F + (1|F:R), DS))
+Linear mixed-effects model fit by REML
+Formula: s ~ F + (1 | F:R)
+   Data: DS
+      AIC     BIC    logLik MLdeviance REMLdeviance
+ 17.77917 19.7188 -4.889587   7.669022     9.779175
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ F:R      (Intercept) 0.158346 0.39793
+ Residual             0.048525 0.22028
+# of obs: 12, groups: F:R, 6
+
+Fixed effects:
+            Estimate Std. Error DF  t value Pr(|t|)
+(Intercept) 50.94833    0.24672 10 206.5049  < 2e-16
+F2           1.00833    0.34891 10   2.8899  0.01611
+
+
